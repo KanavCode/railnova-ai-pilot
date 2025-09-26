@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* RailNova AI Dashboard Design System - Dark Theme */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark theme color palette */
+    --background: 210 19% 11%; /* #1a202c - Charcoal/Dark Blue */
+    --foreground: 210 17% 91%; /* #e2e8f0 - Light Gray */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 213 19% 20%; /* #2d3748 - Component backgrounds */
+    --card-foreground: 210 17% 91%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 213 19% 20%;
+    --popover-foreground: 210 17% 91%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary accent - Amber */
+    --primary: 43 96% 56%; /* #f59e0b - Amber for CTAs */
+    --primary-foreground: 210 19% 11%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary accent - Teal */
+    --secondary: 172 66% 50%; /* #14b8a6 - Teal for charts/success */
+    --secondary-foreground: 210 17% 91%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 213 13% 27%; /* #3f4a56 - Subtle backgrounds */
+    --muted-foreground: 211 10% 53%; /* #6b7280 - Muted text */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 172 66% 50%; /* Teal accent */
+    --accent-foreground: 210 17% 91%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 17% 91%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 213 13% 27%; /* #3f4a56 - Borders */
+    --input: 213 19% 20%; /* Same as card */
+    --ring: 43 96% 56%; /* Amber ring */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Dashboard specific colors */
+    --dashboard-header: 210 19% 8%; /* #151b23 - Darker header */
+    --dashboard-nav: 213 19% 17%; /* #252d38 - Navigation */
+    --chart-baseline: 211 39% 23%; /* #2563eb - Baseline blue */
+    --chart-optimized: 172 66% 50%; /* #14b8a6 - AI optimized teal */
+    --success: 142 69% 58%; /* #22c55e - Success green */
+    --warning: 38 92% 50%; /* #f97316 - Warning orange */
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
+    --gradient-card: linear-gradient(145deg, hsl(213 19% 20%), hsl(213 19% 17%));
+    --gradient-accent: linear-gradient(135deg, hsl(172 66% 50%), hsl(142 69% 58%));
+
+    /* Shadows */
+    --shadow-glow: 0 0 20px hsl(43 96% 56% / 0.3);
+    --shadow-card: 0 4px 6px -1px hsl(210 19% 8% / 0.4);
+    --shadow-elevated: 0 10px 25px -3px hsl(210 19% 8% / 0.5);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +123,61 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter antialiased;
+  }
+}
+
+@layer components {
+  /* Dashboard specific components */
+  .dashboard-header {
+    @apply bg-[hsl(var(--dashboard-header))] border-b border-border;
+  }
+  
+  .dashboard-nav {
+    @apply bg-[hsl(var(--dashboard-nav))] border-r border-border;
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+  
+  .card-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  /* Chart colors */
+  .chart-baseline {
+    background-color: hsl(var(--chart-baseline));
+  }
+  
+  .chart-optimized {
+    background-color: hsl(var(--chart-optimized));
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary;
+  }
+  
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-smooth hover:-translate-y-1 hover:shadow-elevated;
+  }
+  
+  .hover-glow {
+    @apply transition-smooth hover:glow-effect;
   }
 }
