@@ -30,6 +30,32 @@ const GanttChartView = ({ schedule = [], title, variant = 'baseline' }) => {
     return 'text-destructive';
   };
 
+  const getStatusColor = (status, variant) => {
+    if (variant === 'baseline') {
+      switch (status) {
+        case 'delayed':
+          return 'bg-destructive/70';
+        case 'conflicting':
+          return 'bg-warning/70';
+        case 'blocking':
+          return 'bg-warning/90';
+        case 'cascade_delayed':
+          return 'bg-destructive/90';
+        default:
+          return 'bg-chart-baseline';
+      }
+    } else {
+      switch (status) {
+        case 'optimized':
+          return 'bg-success/80';
+        case 'rerouted':
+          return 'bg-chart-optimized';
+        default:
+          return 'bg-chart-optimized';
+      }
+    }
+  };
+
   const formatTime = (timeString) => {
     const date = new Date(timeString);
     return date.toLocaleTimeString('en-IN', { 
@@ -101,7 +127,7 @@ const GanttChartView = ({ schedule = [], title, variant = 'baseline' }) => {
             </div>
             
             <div className="col-span-1">
-              <div className={`w-3 h-3 rounded-full ${getBarColor()}`} />
+              <div className={`w-3 h-3 rounded-full ${getStatusColor(train.status, variant)}`} />
             </div>
           </div>
         ))}
@@ -112,11 +138,19 @@ const GanttChartView = ({ schedule = [], title, variant = 'baseline' }) => {
           <span className="text-muted-foreground">
             Total Trains: {schedule.length}
           </span>
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${getBarColor()}`} />
-            <span className="text-muted-foreground">
-              {variant === 'baseline' ? 'Manual Schedule' : 'AI Optimized'}
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${variant === 'baseline' ? 'bg-destructive/70' : 'bg-success/80'}`} />
+              <span className="text-muted-foreground text-sm">
+                {variant === 'baseline' ? 'Manual Schedule' : 'AI Optimized'}
+              </span>
+            </div>
+            {variant === 'baseline' && (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-warning/70" />
+                <span className="text-muted-foreground text-sm">Conflicts</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

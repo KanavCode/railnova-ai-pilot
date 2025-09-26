@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ControlsSidebar from './ControlsSidebar';
@@ -12,8 +12,30 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [baselineResult, setBaselineResult] = useState(null);
   const [aiResult, setAiResult] = useState(null);
-  const [currentScenario, setCurrentScenario] = useState(null);
+  const [currentScenario, setCurrentScenario] = useState({
+    name: 'Express Train Delayed',
+    description: 'Major express service disruption affecting multiple routes'
+  });
   const { toast } = useToast();
+
+  // Load presentation data immediately on component mount
+  useEffect(() => {
+    const loadPresentationData = async () => {
+      try {
+        // Simulate that we've just processed a scenario  
+        const response = await runOptimization({ 
+          name: 'Express Train Delayed',
+          description: 'Major express service disruption affecting multiple routes' 
+        });
+        setBaselineResult(response.baseline_result);
+        setAiResult(response.ai_result);
+      } catch (error) {
+        console.error('Failed to load presentation data:', error);
+      }
+    };
+
+    loadPresentationData();
+  }, []);
 
   const handleRunOptimization = async (scenario) => {
     setIsLoading(true);

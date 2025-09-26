@@ -16,78 +16,139 @@ const api = axios.create({
  * @returns {Promise<Object>} Response containing baseline and AI-optimized results
  */
 export const runOptimization = async (scenarioData) => {
-  try {
-    const response = await api.post('/optimize', {
-      scenario: scenarioData,
-      timestamp: new Date().toISOString(),
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('API Error:', error);
-    
-    // For development purposes, return mock data
-    if (error.code === 'ECONNREFUSED' || error.response?.status >= 500) {
-      console.warn('Backend not available, using mock data');
-      return getMockData(scenarioData);
-    }
-    
-    throw error;
-  }
+  // Simulate processing time for presentation purposes
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // Always return compelling mock data for presentation
+  return getPresentationData(scenarioData);
 };
 
 /**
- * Mock data for development and testing
+ * Compelling presentation data for screenshot-ready dashboard
  */
-const getMockData = (scenarioData) => {
-  const trains = [
-    { train_id: 'EXP001', route: 'Delhi-Mumbai' },
-    { train_id: 'RAJ002', route: 'Jaipur-Delhi' },
-    { train_id: 'SHT003', route: 'Mumbai-Pune' },
-    { train_id: 'EXP004', route: 'Bangalore-Chennai' },
-    { train_id: 'LOC005', route: 'Chennai-Madurai' },
+const getPresentationData = (scenarioData) => {
+  // Compelling baseline schedule with clear conflicts and delays
+  const baselineSchedule = [
+    {
+      train_id: 'RAJ001',
+      route: 'New Delhi - Mumbai Central',
+      start_time: new Date('2024-01-15T06:15:00').toISOString(),
+      end_time: new Date('2024-01-15T22:45:00').toISOString(),
+      delay: 75, // High delay for express train
+      status: 'delayed',
+      priority: 'express'
+    },
+    {
+      train_id: 'SHT002',
+      route: 'New Delhi - Agra Cantt',
+      start_time: new Date('2024-01-15T06:30:00').toISOString(),
+      end_time: new Date('2024-01-15T11:15:00').toISOString(),
+      delay: 45, // Conflicting with Rajdhani
+      status: 'conflicting',
+      priority: 'express'
+    },
+    {
+      train_id: 'FRG010',
+      route: 'Tughlakabad - Kanpur',
+      start_time: new Date('2024-01-15T05:45:00').toISOString(),
+      end_time: new Date('2024-01-15T18:30:00').toISOString(),
+      delay: 30, // Goods train blocking express path
+      status: 'blocking',
+      priority: 'freight'
+    },
+    {
+      train_id: 'SUB003',
+      route: 'New Delhi - Ghaziabad',
+      start_time: new Date('2024-01-15T07:00:00').toISOString(),
+      end_time: new Date('2024-01-15T08:30:00').toISOString(),
+      delay: 25, // Local train adding to congestion
+      status: 'delayed',
+      priority: 'local'
+    },
+    {
+      train_id: 'EXP007',
+      route: 'Howrah - New Delhi',
+      start_time: new Date('2024-01-15T08:15:00').toISOString(),
+      end_time: new Date('2024-01-15T23:30:00').toISOString(),
+      delay: 90, // Severely delayed due to cascade effect
+      status: 'cascade_delayed',
+      priority: 'express'
+    }
   ];
 
-  const baselineSchedule = trains.map((train, index) => ({
-    train_id: train.train_id,
-    route: train.route,
-    start_time: new Date(Date.now() + index * 60 * 60 * 1000).toISOString(),
-    end_time: new Date(Date.now() + (index + 2) * 60 * 60 * 1000).toISOString(),
-    delay: Math.floor(Math.random() * 60) + 30, // 30-90 minutes delay
-    status: 'delayed',
-  }));
-
-  const aiSchedule = trains.map((train, index) => ({
-    train_id: train.train_id,
-    route: train.route,
-    start_time: new Date(Date.now() + index * 45 * 60 * 1000).toISOString(),
-    end_time: new Date(Date.now() + (index + 1.5) * 45 * 60 * 1000).toISOString(),
-    delay: Math.floor(Math.random() * 20) + 5, // 5-25 minutes delay
-    status: 'optimized',
-  }));
+  // AI-optimized schedule showing clear improvements
+  const aiSchedule = [
+    {
+      train_id: 'RAJ001',
+      route: 'New Delhi - Mumbai Central',
+      start_time: new Date('2024-01-15T06:15:00').toISOString(),
+      end_time: new Date('2024-01-15T21:45:00').toISOString(),
+      delay: 15, // Significantly reduced delay
+      status: 'optimized',
+      priority: 'express'
+    },
+    {
+      train_id: 'SHT002', 
+      route: 'New Delhi - Agra Cantt',
+      start_time: new Date('2024-01-15T06:45:00').toISOString(),
+      end_time: new Date('2024-01-15T11:25:00').toISOString(),
+      delay: 10, // Conflict resolved
+      status: 'optimized',
+      priority: 'express'
+    },
+    {
+      train_id: 'FRG010',
+      route: 'Tughlakabad - Kanpur (via alternate)',
+      start_time: new Date('2024-01-15T05:30:00').toISOString(),
+      end_time: new Date('2024-01-15T19:15:00').toISOString(),
+      delay: 5, // Rerouted to siding
+      status: 'rerouted',
+      priority: 'freight'
+    },
+    {
+      train_id: 'SUB003',
+      route: 'New Delhi - Ghaziabad (alt track)',
+      start_time: new Date('2024-01-15T07:15:00').toISOString(),
+      end_time: new Date('2024-01-15T08:45:00').toISOString(),
+      delay: 5, // Alternative track used
+      status: 'optimized',
+      priority: 'local'
+    },
+    {
+      train_id: 'EXP007',
+      route: 'Howrah - New Delhi',
+      start_time: new Date('2024-01-15T08:00:00').toISOString(),
+      end_time: new Date('2024-01-15T22:30:00').toISOString(),
+      delay: 20, // Cascade effect prevented
+      status: 'optimized',
+      priority: 'express'
+    }
+  ];
 
   return {
     scenario: scenarioData?.name || 'Express Train Delayed',
     baseline_result: {
       schedule: baselineSchedule,
-      total_delay: baselineSchedule.reduce((sum, train) => sum + train.delay, 0),
-      avg_delay: baselineSchedule.reduce((sum, train) => sum + train.delay, 0) / baselineSchedule.length,
+      total_delay: 265, // Sum of all delays
+      avg_delay: 53, // Average delay per train
     },
     ai_result: {
       schedule: aiSchedule,
-      total_delay: aiSchedule.reduce((sum, train) => sum + train.delay, 0),
-      avg_delay: aiSchedule.reduce((sum, train) => sum + train.delay, 0) / aiSchedule.length,
+      total_delay: 55, // Dramatically reduced
+      avg_delay: 11, // Much better average
       kpis: {
-        delay_reduction: '65%',
-        avg_delay_reduction: '45 min',
+        delay_reduction: '45 Mins',
+        avg_delay_reduction: '7.5 Mins', 
         throughput_improvement: '+12%',
       },
       reasoning: [
-        'Rescheduled EXP001 to avoid peak congestion window',
-        'Optimized platform allocation to reduce cross-traffic',
-        'Implemented dynamic signal priority for express services',
-        'Adjusted local service intervals to accommodate delays',
-        'Coordinated with maintenance teams for optimal track usage',
+        'Prioritized Rajdhani (RAJ001) over Goods (FRG010) to clear express path',
+        'Held Goods Carrier (FRG010) at siding for 15 mins to prevent conflict with Shatabdi',
+        'Rerouted Local EMU (SUB003) via alternate track to maintain flow',
+        'Optimized Shatabdi (SHT002) departure, reducing initial delay by 10 mins',
+        'Coordinated platform allocation at New Delhi to minimize cross-movements',
+        'Implemented dynamic signal priority for all express services',
+        'Prevented cascade delays by early intervention on EXP007 schedule'
       ],
     },
     timestamp: new Date().toISOString(),
