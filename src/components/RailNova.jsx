@@ -52,51 +52,77 @@ const BarChartIcon = ({ className }) => (
 );
 
 // KPI Card Component
-const KpiCard = ({ icon, title, value, iconColor }) => (
-  <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-    <div className="flex items-center space-x-3">
-      <div className={`p-2 rounded-lg bg-slate-700 ${iconColor}`}>
-        {icon}
+const KpiCard = ({ icon, title, value, iconColor, trend }) => (
+  <div className="group bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm rounded-xl p-5 border border-slate-700/50 hover:border-slate-600/70 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/20 hover:-translate-y-0.5">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-4">
+        <div className={`p-3 rounded-xl bg-gradient-to-br from-slate-700/70 to-slate-800/70 ${iconColor} group-hover:scale-105 transition-transform duration-300`}>
+          {icon}
+        </div>
+        <div>
+          <p className="text-slate-400 text-sm font-medium tracking-wide">{title}</p>
+          <p className="text-white text-2xl font-bold mt-1">{value}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-slate-400 text-sm">{title}</p>
-        <p className="text-white text-xl font-bold">{value}</p>
-      </div>
+      {trend && (
+        <div className="text-right">
+          <div className={`text-xs px-2 py-1 rounded-full ${
+            trend > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {trend > 0 ? '+' : ''}{trend}%
+          </div>
+        </div>
+      )}
     </div>
   </div>
 );
 
 // Gantt Chart Component
-const GanttChartView = ({ title, data, titleColor = "text-white" }) => {
+const GanttChartView = ({ title, data, titleColor = "text-white", isOptimized = false }) => {
   const maxTime = 140;
   const timeMarkers = [25, 50, 75, 100, 125];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'delayed': return 'bg-red-600';
-      case 'on_time': return 'bg-blue-600';
-      case 'conflicting': return 'bg-yellow-600 animate-pulse';
-      case 'optimized': return 'bg-teal-500';
-      case 'held': return 'bg-orange-500';
-      case 'rerouted': return 'bg-purple-500';
-      default: return 'bg-blue-600';
+      case 'delayed': return 'bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-600/30';
+      case 'on_time': return 'bg-gradient-to-r from-blue-600 to-blue-500 shadow-lg shadow-blue-600/30';
+      case 'conflicting': return 'bg-gradient-to-r from-yellow-600 to-yellow-500 animate-pulse shadow-lg shadow-yellow-600/30';
+      case 'optimized': return 'bg-gradient-to-r from-teal-500 to-emerald-500 shadow-lg shadow-teal-500/40';
+      case 'held': return 'bg-gradient-to-r from-orange-500 to-amber-500 shadow-lg shadow-orange-500/30';
+      case 'rerouted': return 'bg-gradient-to-r from-purple-500 to-indigo-500 shadow-lg shadow-purple-500/30';
+      default: return 'bg-gradient-to-r from-blue-600 to-blue-500 shadow-lg shadow-blue-600/30';
     }
   };
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-      <h3 className={`text-lg font-semibold mb-4 ${titleColor}`}>{title}</h3>
+    <div className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl ${isOptimized ? 'ring-2 ring-teal-500/20' : ''}`}>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className={`text-xl font-bold ${titleColor} flex items-center space-x-3`}>
+          {isOptimized && (
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-teal-500 animate-pulse"></div>
+              <CheckCircleIcon className="w-5 h-5 text-teal-400" />
+            </div>
+          )}
+          <span>{title}</span>
+        </h3>
+        <div className="flex items-center space-x-2 text-sm text-slate-400">
+          <ClockIcon className="w-4 h-4" />
+          <span>Timeline (minutes)</span>
+        </div>
+      </div>
       
-      {/* Timeline */}
-      <div className="relative mb-4">
-        <div className="h-8 bg-slate-700 rounded relative">
+      {/* Enhanced Timeline */}
+      <div className="relative mb-8">
+        <div className="h-10 bg-gradient-to-r from-slate-700/50 to-slate-600/50 rounded-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-500/10 to-transparent"></div>
           {timeMarkers.map(marker => (
             <div
               key={marker}
-              className="absolute top-0 bottom-0 w-px bg-slate-500"
+              className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-slate-400 to-slate-600"
               style={{ left: `${(marker / maxTime) * 100}%` }}
             >
-              <span className="absolute -top-6 -translate-x-1/2 text-xs text-slate-400">
+              <span className="absolute -top-8 -translate-x-1/2 text-xs font-medium text-slate-300 bg-slate-800/80 px-2 py-1 rounded-md backdrop-blur-sm">
                 {marker}m
               </span>
             </div>
@@ -104,26 +130,33 @@ const GanttChartView = ({ title, data, titleColor = "text-white" }) => {
         </div>
       </div>
 
-      {/* Train Schedules */}
-      <div className="space-y-3">
+      {/* Enhanced Train Schedules */}
+      <div className="space-y-4">
         {data.map((train, index) => (
-          <div key={train.id} className="flex items-center space-x-3">
-            <div className="w-20 text-sm text-slate-300 font-mono">{train.id}</div>
-            <div className="flex-1 relative h-8 bg-slate-700 rounded">
-              <div
-                className={`absolute top-1 bottom-1 rounded ${getStatusColor(train.status)}`}
-                style={{
-                  left: `${(train.start / maxTime) * 100}%`,
-                  width: `${((train.end - train.start) / maxTime) * 100}%`
-                }}
-              >
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">
-                  {train.name}
-                </span>
+          <div key={train.id} className="group">
+            <div className="flex items-center space-x-4">
+              <div className="w-24 text-sm font-mono font-bold text-slate-200 bg-slate-700/50 px-3 py-2 rounded-lg">
+                {train.id}
               </div>
-            </div>
-            <div className="w-16 text-xs text-slate-400">
-              {train.end - train.start}m
+              <div className="flex-1 relative h-10 bg-gradient-to-r from-slate-700/30 to-slate-600/30 rounded-lg overflow-hidden">
+                <div
+                  className={`absolute top-1 bottom-1 rounded-lg transition-all duration-500 hover:scale-y-110 ${getStatusColor(train.status)}`}
+                  style={{
+                    left: `${(train.start / maxTime) * 100}%`,
+                    width: `${((train.end - train.start) / maxTime) * 100}%`
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white drop-shadow-lg">
+                      {train.name}
+                    </span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+                </div>
+              </div>
+              <div className="w-20 text-sm font-medium text-slate-300 bg-slate-700/30 px-3 py-2 rounded-lg text-center">
+                {train.end - train.start}m
+              </div>
             </div>
           </div>
         ))}
@@ -134,13 +167,22 @@ const GanttChartView = ({ title, data, titleColor = "text-white" }) => {
 
 // Recommendations Panel Component
 const RecommendationPanel = ({ recommendations }) => (
-  <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-    <h3 className="text-lg font-semibold mb-4 text-amber-400">AI Recommendations & Reasoning</h3>
-    <div className="space-y-3">
+  <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+    <div className="flex items-center space-x-3 mb-6">
+      <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+        <LightbulbIcon className="w-6 h-6 text-amber-400" />
+      </div>
+      <h3 className="text-xl font-bold text-amber-400">AI Recommendations & Reasoning</h3>
+    </div>
+    <div className="space-y-4">
       {recommendations.map((rec, index) => (
-        <div key={index} className="flex items-start space-x-3">
-          <LightbulbIcon className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
-          <p className="text-slate-300 text-sm leading-relaxed">{rec}</p>
+        <div key={index} className="group relative">
+          <div className="flex items-start space-x-4 p-4 rounded-xl bg-gradient-to-r from-slate-700/30 to-slate-600/30 border border-slate-600/30 hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg">
+            <div className="p-1.5 rounded-lg bg-amber-500/20 group-hover:bg-amber-500/30 transition-colors duration-300">
+              <LightbulbIcon className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            </div>
+            <p className="text-slate-200 text-sm leading-relaxed font-medium">{rec}</p>
+          </div>
         </div>
       ))}
     </div>
@@ -153,12 +195,17 @@ const RailNova = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState('scenario1');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Update time every second
+  // Update time every second and handle initial load
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
+    
+    // Simulate initial load animation
+    setTimeout(() => setIsLoaded(true), 300);
+    
     return () => clearInterval(timer);
   }, []);
 
@@ -216,62 +263,83 @@ const RailNova = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans">
-      {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 p-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <TrainIcon className="w-8 h-8 text-amber-400" />
-            <div>
-              <h1 className="text-xl font-bold text-white">RailNova</h1>
-              <p className="text-sm text-slate-400">AI Train Traffic Co-Pilot</p>
+    <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white font-sans transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Enhanced Header */}
+      <header className="bg-gradient-to-r from-slate-800/95 to-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 shadow-xl">
+        <div className="px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 shadow-lg">
+                <TrainIcon className="w-8 h-8 text-amber-400" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white tracking-tight">RailNova</h1>
+                <p className="text-sm text-slate-300 font-medium">AI Train Traffic Co-Pilot</p>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-slate-400">Controller ID: C-451</p>
-            <p className="text-sm text-slate-300">
-              {currentTime.toLocaleTimeString('en-IN', { hour12: false })}
-            </p>
+            <div className="text-right bg-slate-700/30 rounded-xl px-6 py-3 border border-slate-600/50">
+              <p className="text-sm text-slate-300 font-medium">Controller ID: C-451 | Section: North-Central</p>
+              <p className="text-sm text-slate-200 font-mono">
+                Last Updated: {currentTime.toLocaleTimeString('en-IN', { hour12: false })}
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Layout */}
-      <div className="flex h-[calc(100vh-80px)]">
-        {/* Left Sidebar */}
-        <div className="w-1/5 bg-slate-800 border-r border-slate-700 p-6">
-          <div className="space-y-6">
+      <div className="flex h-[calc(100vh-120px)]">
+        {/* Enhanced Left Sidebar */}
+        <div className="w-80 bg-gradient-to-b from-slate-800/95 to-slate-900/95 backdrop-blur-sm border-r border-slate-700/50 shadow-2xl">
+          <div className="p-8 space-y-8">
             <div>
-              <h2 className="text-lg font-semibold mb-4 text-white">Simulation Controls</h2>
+              <h2 className="text-xl font-bold mb-6 text-white flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                  <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                  </svg>
+                </div>
+                <span>Simulation Controls</span>
+              </h2>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm text-slate-400 mb-2">Select Disruption Scenario</label>
-                  <select
-                    value={selectedScenario}
-                    onChange={(e) => setSelectedScenario(e.target.value)}
-                    className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    {scenarios.map(scenario => (
-                      <option key={scenario.id} value={scenario.id}>
-                        {scenario.name}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-slate-300 mb-3">Select Disruption Scenario</label>
+                  <div className="relative">
+                    <select
+                      value={selectedScenario}
+                      onChange={(e) => setSelectedScenario(e.target.value)}
+                      className="w-full bg-gradient-to-r from-slate-700/80 to-slate-600/80 backdrop-blur-sm border border-slate-600/50 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all duration-300 appearance-none cursor-pointer hover:border-slate-500/70"
+                    >
+                      <option value="scenario1" className="bg-slate-800">Scenario 1: Express Train Delayed</option>
+                      <option value="scenario2" className="bg-slate-800">Scenario 2: Track Maintenance</option>
+                      <option value="scenario3" className="bg-slate-800">Scenario 3: Heavy Congestion</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <button
                   onClick={handleOptimization}
                   disabled={isOptimizing}
-                  className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-amber-700 text-white font-semibold py-3 px-4 rounded transition-colors duration-200 flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:from-amber-700 disabled:to-orange-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl hover:shadow-amber-500/25 transform hover:-translate-y-0.5 disabled:transform-none"
                 >
                   {isOptimizing ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Optimizing...</span>
                     </>
                   ) : (
-                    <span>Run AI Optimization</span>
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>Run AI Optimization</span>
+                    </>
                   )}
                 </button>
               </div>
@@ -279,39 +347,39 @@ const RailNova = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {/* Tabs */}
-          <div className="mb-6">
-            <div className="flex space-x-1 border-b border-slate-700">
+        {/* Enhanced Main Content */}
+        <div className="flex-1 p-8 overflow-auto">
+          {/* Enhanced Tabs */}
+          <div className="mb-8">
+            <div className="flex space-x-2 bg-slate-800/50 rounded-2xl p-2 backdrop-blur-sm border border-slate-700/50">
               <button
                 onClick={() => setActiveTab('gantt')}
-                className={`px-4 py-2 font-medium text-sm transition-colors duration-200 flex items-center space-x-2 ${
+                className={`flex items-center space-x-3 px-6 py-3 font-semibold text-sm rounded-xl transition-all duration-300 ${
                   activeTab === 'gantt'
-                    ? 'text-amber-400 border-b-2 border-amber-400'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
               >
-                <BarChartIcon className="w-4 h-4" />
+                <BarChartIcon className="w-5 h-5" />
                 <span>Gantt Chart View</span>
               </button>
               <button
                 onClick={() => setActiveTab('map')}
-                className={`px-4 py-2 font-medium text-sm transition-colors duration-200 flex items-center space-x-2 ${
+                className={`flex items-center space-x-3 px-6 py-3 font-semibold text-sm rounded-xl transition-all duration-300 ${
                   activeTab === 'map'
-                    ? 'text-amber-400 border-b-2 border-amber-400'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
               >
-                <MapIcon className="w-4 h-4" />
+                <MapIcon className="w-5 h-5" />
                 <span>Map View</span>
               </button>
             </div>
           </div>
 
-          {/* Tab Content */}
+          {/* Enhanced Tab Content */}
           {activeTab === 'gantt' && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <GanttChartView
                 title="Baseline Schedule (Manual Approach)"
                 data={baselineData}
@@ -320,48 +388,59 @@ const RailNova = () => {
                 title="AI-Optimized Schedule"
                 data={optimizedData}
                 titleColor="text-teal-400"
+                isOptimized={true}
               />
             </div>
           )}
 
           {activeTab === 'map' && (
-            <div className="bg-slate-800 rounded-lg p-12 border-2 border-dashed border-slate-600 text-center">
-              <MapIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Live Map View</h3>
-              <p className="text-slate-400">Coming Soon! Interactive railway network visualization.</p>
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm rounded-2xl p-16 border-2 border-dashed border-slate-600/50 text-center shadow-2xl">
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-700/30 to-slate-600/30 inline-block mb-6">
+                <MapIcon className="w-20 h-20 text-slate-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Live Map View</h3>
+              <p className="text-slate-400 text-lg max-w-md mx-auto">Coming Soon! Interactive railway network visualization with real-time train positions and route optimization.</p>
             </div>
           )}
         </div>
 
-        {/* Right Sidebar */}
-        <div className="w-[30%] bg-slate-800 border-l border-slate-700 p-6">
-          <div className="space-y-6">
-            {/* Performance Impact */}
+        {/* Enhanced Right Sidebar */}
+        <div className="w-96 bg-gradient-to-b from-slate-800/95 to-slate-900/95 backdrop-blur-sm border-l border-slate-700/50 shadow-2xl overflow-auto">
+          <div className="p-8 space-y-8">
+            {/* Enhanced Performance Impact */}
             <div>
-              <h2 className="text-lg font-semibold mb-4 text-white">Performance Impact</h2>
-              <div className="space-y-3">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20">
+                  <ChartIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <h2 className="text-xl font-bold text-white">Performance Impact</h2>
+              </div>
+              <div className="space-y-4">
                 <KpiCard
-                  icon={<ClockIcon className="w-5 h-5" />}
+                  icon={<ClockIcon className="w-6 h-6" />}
                   title="Total Delay Reduced"
                   value="45 Mins"
                   iconColor="text-amber-400"
+                  trend={-33}
                 />
                 <KpiCard
-                  icon={<ChartIcon className="w-5 h-5" />}
+                  icon={<ChartIcon className="w-6 h-6" />}
                   title="Average Delay Per Train"
                   value="7.5 Mins"
                   iconColor="text-teal-400"
+                  trend={-28}
                 />
                 <KpiCard
-                  icon={<CheckCircleIcon className="w-5 h-5" />}
+                  icon={<CheckCircleIcon className="w-6 h-6" />}
                   title="Section Throughput"
                   value="+12%"
                   iconColor="text-green-400"
+                  trend={12}
                 />
               </div>
             </div>
 
-            {/* AI Recommendations */}
+            {/* Enhanced AI Recommendations */}
             <RecommendationPanel recommendations={recommendations} />
           </div>
         </div>
