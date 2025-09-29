@@ -1,8 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* RailNova AI Dashboard Design System - Dark Theme */
 
 @layer base {
   :root {
@@ -121,11 +116,16 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
+    border-width: 1px;
+    border-style: solid;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   
@@ -153,11 +153,13 @@
 @layer components {
   /* Dashboard specific components */
   .dashboard-header {
-    @apply bg-[hsl(var(--dashboard-header))] border-b border-border;
+    background-color: hsl(var(--dashboard-header));
+    border-bottom: 1px solid hsl(var(--border));
   }
   
   .dashboard-nav {
-    @apply bg-[hsl(var(--dashboard-nav))] border-r border-border;
+    background-color: hsl(var(--dashboard-nav));
+    border-right: 1px solid hsl(var(--border));
   }
   
   .card-gradient {
@@ -192,15 +194,35 @@
   
   /* Loading spinner */
   .spinner {
-    @apply animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary;
+    animation: spin 1s linear infinite;
+    border-radius: 9999px;
+    height: 1rem;
+    width: 1rem;
+    border-width: 2px;
+    border-style: solid;
+    border-color: hsl(var(--primary) / 0.3);
+    border-top-color: hsl(var(--primary));
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
   
   /* Hover effects */
   .hover-lift {
-    @apply transition-smooth hover:-translate-y-1 hover:shadow-elevated;
+    transition: var(--transition-smooth);
+  }
+  .hover-lift:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: var(--shadow-elevated);
   }
   
   .hover-glow {
-    @apply transition-smooth hover:glow-effect;
+    transition: var(--transition-smooth);
+  }
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow);
   }
 }
