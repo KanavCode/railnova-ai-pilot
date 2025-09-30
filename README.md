@@ -4,6 +4,12 @@
 
 If you want to work locally using your own IDE, you can clone this repo and push changes.
 
+
+<img width="1133" height="673" alt="RailNova_Pic" src="https://github.com/user-attachments/assets/8a592752-0e2c-4178-b1be-53d9168fef26" />
+<img width="1128" height="845" alt="Frontend_AI" src="https://github.com/user-attachments/assets/f2e2cc96-8070-4de5-8d8a-f3b41d42032b" />
+<img width="1129" height="849" alt="AI_Recommendations" src="https://github.com/user-attachments/assets/c1b9795d-341b-4718-9cf3-21d1f1b7c09b" />
+
+
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
 Follow these steps:
